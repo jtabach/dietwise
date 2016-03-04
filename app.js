@@ -8,6 +8,8 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
+var stormpath = require('express-stormpath');
+
 var app = express();
 
 // view engine setup
@@ -24,6 +26,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
+
+app.use(stormpath.init(app, {
+  client: {
+    apiKey: {
+      id: process.env['STORMPATH_CLIENT_APIKEY_ID'],
+      secret: process.env['STORMPATH_CLIENT_APIKEY_SECRET']
+    }
+  },
+  application: {
+    href: process.env['STORMPATH_APPLICATION_HREF']
+  }
+}));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
